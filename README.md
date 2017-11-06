@@ -48,3 +48,5 @@ After environments are set one can add some default users associated with enviro
 When init.json is ready do following in chrome itself:
 
     Chrome -> More Tools -> Extensions -> Load unpacked extension
+    
+Also, once the extension is installed one could easily add users in options screen (click on extenstion icon -> Options)
