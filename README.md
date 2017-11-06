@@ -1,26 +1,26 @@
 # TokenProvider
 
-This chrome extension was made to simplify usage of authentication token which can be obtained from your remote server.
+This chrome extension is made to simplify usage of authentication token which can be obtained from your remote server.
 
 The idea is that there is a remote server (or servers) that returns authentication token for provided user login and password.
-And now imagine that we have different web sites where we need the token to enter manually (or copypaste from some web site which provides it). So, instead manual copy-pasting all the time you need the token you can install the extenstion and use right click context menu 'Insert Token' on editable element instead.
+And now imagine that we have different web sites where we need the token to be entered manually (or copypasted from some web site). So, instead of manual copy-pasting all the time, you can install the extenstion and use the right click context menu 'Insert Token' on editable element.
 
 ## How it works
 
-When user perform right click on editable element (like textbox, textarea etc.), extension checks current tab's URL to match one of defined environments of default user, and if it succeed, sends the request to remote server as json:
+When the user performs a right click on editable element (like textbox, textarea etc.), the extension checks current tab's URL to identify the environment from default user's settings, and when it does, the request is sent to the remote server as json:
 
     {
         userName: user.login,
         password: user.pass,
     }
 
-And the server should response with following json as well:
+And the server should respond with the following json:
 
     {
         token: "<something_here>"
     }
     
-Once the token is got, the extension remove all text from selected control and insert actual token there.
+Once the token is got, the extension removes all the text from selected control and inserts the actual token.
 
 ## Installation
 
@@ -35,7 +35,7 @@ By default it contains one empty environment.
         "match": "<regexp>" // matching regexp for this environment
     }
   
-After environments are set one can add some default users associated with environment:
+After environments are set one can add some default users associated with the environment:
 
     {
         "user": "<text>", // used to differentiate users on options screen
@@ -45,8 +45,8 @@ After environments are set one can add some default users associated with enviro
         "isDefault": "<text>" // 'true' for default user and 'false' otherwise
     }
   
-When init.json is ready do following in chrome itself:
+When init.json is ready do the following in Chrome:
 
     Chrome -> More Tools -> Extensions -> Load unpacked extension
     
-Also, once the extension is installed one could easily add users in options screen (click on extenstion icon -> Options)
+Also, once the extension is installed, one could easily add users in Options screen (click on the extenstion icon -> Options)
