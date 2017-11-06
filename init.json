@@ -1,0 +1,20 @@
+{
+    "users": [
+        {
+            "user": "",
+            "env": "",
+            "login": "",
+            "pass": "",
+            "isDefault": ""
+        }
+    ],
+    "environments": [
+        {
+            "name": "",
+            "display": "",
+            "method": "",
+            "url": "",
+            "match": ""
+        }
+    ]
+}

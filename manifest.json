@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+  "name": "Token Provider",
+  "short_name": "TokenProvider",
+  "description": "",
+  "version": "0.0.3",
+  "author": "Sergii Martianov",
+  "minimum_chrome_version": "38",
+  "permissions": [
+    "http://*/",
+    "https://*/",
+    "contextMenus",
+    "activeTab",
+    "storage",
+    "unlimitedStorage",
+    "https://unpkg.com/purecss@1.0.0/build/pure-min.css"
+  ],
+  "icons": {
+    "32": "assets/icon.png"
+  },
+  "background": {
+    "page": "backend.html"
+  },
+  "options_page": "options.html",
+  "web_accessible_resources": [
+    "script.js"
+  ]
+}
