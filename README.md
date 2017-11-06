@@ -7,7 +7,7 @@ And now imagine that we have different web sites where we need the token to ente
 
 ## How it works
 
-Technically extension sends request to remote server as json:
+When user perform right click on editable element (like textbox, textarea etc.), extension checks current tab's URL to match one of defined environments of default user, and if it succeed, sends the request to remote server as json:
 
     {
         userName: user.login,
@@ -19,6 +19,8 @@ And the server should response with following json as well:
     {
         token: "<something_here>"
     }
+    
+Once the token is got, the extension remove all text from selected control and insert actual token there.
 
 ## Installation
 
