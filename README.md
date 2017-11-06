@@ -5,7 +5,22 @@ This chrome extension was made to simplify usage of authentication token which c
 The idea is that there is a remote server (or servers) that returns authentication token for provided user login and password.
 And now imagine that we have different web sites where we need the token to enter manually (or copypaste from some web site which provides it). So, instead manual copy-pasting all the time you need the token you can install the extenstion and use right click context menu 'Insert Token' on editable element instead.
 
-## Install
+## How it works
+
+Technically extension sends request to remote server as json:
+
+    {
+        userName: user.login,
+        password: user.pass,
+    }
+
+And the server should response with following json as well:
+
+    {
+        token: "<something_here>"
+    }
+
+## Installation
 
 Before installation one should edit init.json file to add some environments there.
 By default it contains one empty environment.
