@@ -1,10 +1,12 @@
 function init() {
     chrome.storage.local.get('data', function (store) {
-
+        let users = [];
         for (let user of store.data.users) {
+            if(users.find(x=> x === user.user))
+                continue;
+            users.push(user.user);
             $("#placeholder").append(user_template(user));
         }
-
     });
 }
 
