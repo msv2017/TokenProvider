@@ -1,0 +1,32 @@
+body {
+    overflow: hidden;
+    margin: 0px;
+    padding: 0px;
+    background: white;
+}
+
+div {
+    white-space: nowrap;
+    padding: 0.5em;
+}
+
+div.user:hover {
+    background-color: #cccccc;
+    cursor: default;
+}
+
+img {
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
+}
+
+span {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+div#placeholder span:first-child {
+    padding: 1em;
+    font-weight: bold;
+}

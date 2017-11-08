@@ -115,7 +115,7 @@ function set_user() {
 
 var orderSeq = 1;
 
-$.getJSON("init.json", (data) => {
+$.getJSON("/init.json", (data) => {
     settings = data;
 });
 

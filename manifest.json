@@ -3,7 +3,7 @@
   "name": "Token Provider",
   "short_name": "TokenProvider",
   "description": "",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "author": "Sergii Martianov",
   "minimum_chrome_version": "38",
   "permissions": [
@@ -21,7 +21,11 @@
   "background": {
     "page": "backend.html"
   },
-  "options_page": "options.html",
+  "browser_action": {
+    "default_icon": "assets/icon.png",
+    "default_popup": "popup/popup.html"
+  },
+  "options_page": "options/options.html",
   "web_accessible_resources": [
     "script.js"
   ]
