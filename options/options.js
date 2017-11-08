@@ -45,6 +45,26 @@ function restore_options() {
     });
 }
 
+function export_settings() {
+    chrome.storage.local.get('data', function (store) {
+
+        let content = JSON.stringify(store);
+        var reader = new FileReader();
+        var blob = new Blob([content]);
+        reader.readAsDataURL(blob);
+        reader.onload = function (event) {
+            var save = document.createElement('a');
+            save.href = event.target.result;
+            save.target = '_blank';
+            save.download = "init.json";
+
+            var event = document.createEvent('Event');
+            event.initEvent('click', true, true);
+            save.click();
+        };
+    });
+}
+
 function get_inputs(user, env) {
     return `
 <td login>
@@ -128,4 +148,5 @@ $(() => {
 
     $("#save").on("click", save_options);
     $("#new").on("click", add_controls);
+    $("#export").on("click", export_settings);
 });
