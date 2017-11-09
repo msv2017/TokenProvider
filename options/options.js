@@ -16,7 +16,7 @@ function save_options() {
     chrome.storage.local.set({ data: { users: data, environments: settings.environments } }, function () {
         setTimeout(function () {
             window.close();
-        }, 500);
+        }, 0);
     });
 
     return false;
@@ -48,21 +48,48 @@ function restore_options() {
 function export_settings() {
     chrome.storage.local.get('data', function (store) {
 
-        let content = JSON.stringify(store);
-        var reader = new FileReader();
-        var blob = new Blob([content]);
+        let data = store.data;
+        let content = JSON.stringify(data);
+        let reader = new FileReader();
+        let blob = new Blob([content]);
         reader.readAsDataURL(blob);
-        reader.onload = function (event) {
+        reader.onload = function (e) {
             var save = document.createElement('a');
-            save.href = event.target.result;
+            save.href = e.target.result;
             save.target = '_blank';
             save.download = "init.json";
 
-            var event = document.createEvent('Event');
-            event.initEvent('click', true, true);
+            var e = document.createEvent('Event');
+            e.initEvent('click', true, true);
             save.click();
         };
     });
+}
+
+function import_settings() {
+    var fileInput = document.createElement("input");
+    fileInput.type = 'file';
+
+    fileInput.addEventListener('change', function (e) {
+        var f = e.target.files[0];
+        if (f) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                let data = JSON.parse(e.target.result);
+
+                chrome.storage.local.set({ data: { users: data.users, environments: data.environments } }, function () {
+                    setTimeout(function () {
+                        location.reload();
+                    }, 0);
+                });
+
+            }
+            reader.readAsText(f);
+        }
+    });
+
+    document.body.appendChild(fileInput);
+    fileInput.click();
 }
 
 function get_inputs(user, env) {
@@ -149,4 +176,5 @@ $(() => {
     $("#save").on("click", save_options);
     $("#new").on("click", add_controls);
     $("#export").on("click", export_settings);
+    $("#import").on("click", import_settings);
 });

@@ -33,7 +33,7 @@ function user_click() {
         chrome.storage.local.set({ data: { users: store.data.users, environments: settings.environments } }, function () {
             setTimeout(function () {
                 window.close();
-            }, 500);
+            }, 0);
         });
 
     });
