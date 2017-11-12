@@ -111,7 +111,8 @@ function get_row(user) {
     </td>
     ${settings.environments.map(env => get_inputs(user, env)).join('')}
     <td>
-        <button type="button" class="remove pure-button">
+        <button type="button" class="remove pure-button tooltip">
+            <span class="tooltiptext">Delete user</span>
             <img user="${user}" src="/assets/remove.svg">
         </button>
     </td>
