@@ -1,4 +1,18 @@
-function save_options() {
+function save(closeWindow) {
+
+    let envs = [];
+
+    $.each($('tr[env]'), (i, tr) => {
+        let env = {};
+        $.each($('input', tr), (j, input) => {
+            let name = $(input).attr('name');
+            let value = $(input).val();
+            env[name] = value;
+        });
+        envs.push(env);
+    });
+
+    settings.environments = envs;
 
     let users = $("tr[user]").toArray().map(x => ({ user: $(x).attr('user'), order: $(x).attr('order') }));
     users = users.sort((a, b) => parseInt(a.order) - parseInt(b.order));
@@ -15,23 +29,64 @@ function save_options() {
 
     chrome.storage.local.set({ data: { users: data, environments: settings.environments } }, function () {
         setTimeout(function () {
-            window.close();
+            if (closeWindow)
+                window.close();
         }, 0);
     });
 
     return false;
 }
 
-function restore_options() {
+function users_header(envs) {
+    return `
+    <thead>
+        <tr>
+            <th></th>
+            <th>User</th>
+            ${envs.map(x => `<th colspan='2'>${x.display}</th>`).join()}
+            <th></th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+    `;
+}
+
+function envs_header(envs) {
+    return `
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Display</th>
+            <th>Method</th>
+            <th>Url</th>
+            <th>Match</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        ${envs.map(x => row_env(x)).join()}
+    </tbody>
+    `;
+}
+
+function update() {
     chrome.storage.local.get('data', function (store) {
 
-        $.each(settings.environments, (i, env) => $("thead tr").append(`<th colspan="2">${env.display}</th>`));
-        $("thead tr").append("<th></th>");
-        $("#controls").attr("colspan", (settings.environments.length + 1) * 2);
+        if ($.isEmptyObject(store))
+            store = settings;
+        else {
+            store = store.data;
+        }
 
-        let users = $.isEmptyObject(store) ? settings.users : store.data.users;
+        // alert(JSON.stringify(store, null, 2));
 
-        $.each([...new Set(users.map(x => x.user))], (i, user) => add_controls_silent(user));
+        $('table#users').empty();
+        $('table#users').append(users_header(store.environments));
+        $("#controls").attr("colspan", (store.environments.length + 1) * 2);
+
+        let users = store.users;
+
+        $.each([...new Set(users.map(x => x.user))], (i, user) => add_user(store.environments, user));
 
         $.each(users, (i, data) => {
             let user = data.user;
@@ -42,10 +97,32 @@ function restore_options() {
             let src = data.isDefault === "true" ? "square_checked.svg" : "square_empty.svg";
             $(`tr[user="${user}"] td img.check_default`).attr("src", `/assets/${src}`);
         });
+
+        $('table#envs').empty();
+        $('table#envs').append(envs_header(store.environments));
     });
 }
 
-function export_settings() {
+function row_env({ name, display, method, url, match } = {}) {
+    let index = envSeq++;
+    return `
+    <tr env>
+    <td><input name="name" order=${index} type="text" placeholder="name" value="${name || ''}"></td>
+    <td><input name="display" order=${index} type="text" placeholder="display" value="${display || ''}"></td>
+    <td><input name="method" order=${index} type="text" placeholder="method" value="${method || ''}"></td>
+    <td><input name="url" order=${index} type="text" placeholder="url" value="${url || ''}"></td>
+    <td><input name="match" order=${index} type="text" placeholder="match" value="${match || ''}"></td>
+    <td>
+        <button type="button" class="remove pure-button tooltip">
+            <span class="tooltiptext">Delete</span>
+            <img src="/assets/remove.svg">
+        </button>
+    </td>
+    </tr>
+    `;
+}
+
+function export_data() {
     chrome.storage.local.get('data', function (store) {
 
         let data = store.data;
@@ -55,6 +132,7 @@ function export_settings() {
         reader.readAsDataURL(blob);
         reader.onload = function (e) {
             var save = document.createElement('a');
+            save.id = 'export';
             save.href = e.target.result;
             save.target = '_blank';
             save.download = "init.json";
@@ -66,7 +144,7 @@ function export_settings() {
     });
 }
 
-function import_settings() {
+function import_data() {
     var fileInput = document.createElement("input");
     fileInput.type = 'file';
 
@@ -90,9 +168,11 @@ function import_settings() {
 
     document.body.appendChild(fileInput);
     fileInput.click();
+
+    $(fileInput).remove();
 }
 
-function get_inputs(user, env) {
+function user_login_pass(user, env) {
     return `
 <td login>
     <input id="${env.name}_login" type="text" placeholder="login">
@@ -102,17 +182,19 @@ function get_inputs(user, env) {
 </td>`;
 }
 
-function get_row(user) {
+function row_user(envs, user) {
     return `
-<tr user="${user}" order="${orderSeq++}" default_user="false">
+<tr user="${user}" order="${userSeq++}" default_user="false">
     <td>
-        <img class="check_default" src="/assets/square_empty.svg">&nbsp;
-        <input class="edit_user" type="text" value="${user}">&nbsp;
+        <img class="check_default" src="/assets/square_empty.svg">
     </td>
-    ${settings.environments.map(env => get_inputs(user, env)).join('')}
+    <td>
+        <input class="edit_user" type="text" value="${user}">
+    </td>
+    ${envs.map(env => user_login_pass(user, env)).join('')}
     <td>
         <button type="button" class="remove pure-button tooltip">
-            <span class="tooltiptext">Delete user</span>
+            <span class="tooltiptext">Delete</span>
             <img user="${user}" src="/assets/remove.svg">
         </button>
     </td>
@@ -134,17 +216,23 @@ function gen_user(name) {
     return user;
 }
 
-function add_controls() {
-    let user = gen_user("user");
-    add_controls_silent(user);
-    $(`tr[user='${user}'] input.edit_user`).focus().select();
+function add_row(envs) {
+    if ($("table#users").is(":visible")) {
+        let user = gen_user("user");
+        $("table#users tbody").append(row_user(envs, user));
+        $(`tr[user='${user}'] input.edit_user`).focus().select();
+    }
+
+    if ($("table#envs").is(":visible")) {
+        $("table#envs tbody").append(row_env());
+    }
 }
 
-function add_controls_silent(user) {
-    $("tbody").append(get_row(user));
+function add_user(envs, user) {
+    $("table#users tbody").append(row_user(envs, user));
 }
 
-function remove_controls() {
+function remove_row() {
     $(this).closest("tr").remove();
 }
 
@@ -161,21 +249,34 @@ function set_user() {
     $(this).closest("tr").attr("user", user);
 }
 
-var orderSeq = 1;
+function tab_click() {
+    $(".pure-menu-item").removeClass("pure-menu-selected");
+    $(this).closest("li").addClass("pure-menu-selected")
+    $("table").hide();
+    $(`#${$(this).attr("tab")}`).show();
+
+    save();
+    update();
+}
+
+let envSeq = 1;
+let userSeq = 1;
 
 $.getJSON("/init.json", (data) => {
     settings = data;
 });
 
 $(() => {
-    restore_options();
+    update();
 
-    $(document).on("click", ".remove", remove_controls);
+    $(document).on("click", ".remove", remove_row);
     $(document).on("click", ".check_default", set_default);
+    $(document).on("click", ".pure-menu-link", tab_click);
+
     $(document).on("change", ".edit_user", set_user);
 
-    $("#save").on("click", save_options);
-    $("#new").on("click", add_controls);
-    $("#export").on("click", export_settings);
-    $("#import").on("click", import_settings);
+    $("#save").on("click", save);
+    $("#new").on("click", add_row);
+    $("#export").on("click", export_data);
+    $("#import").on("click", import_data);
 });

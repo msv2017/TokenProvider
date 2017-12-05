@@ -6,45 +6,54 @@
     <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css">
     <link rel="stylesheet" href="options.css">
     <script type="text/javascript" src="/jquery-3.2.1.min.js"></script>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body>
-    <table>
-        <thead>
-            <tr>
-                <th>User</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-        <tfoot>
-            <tr>
-                <td id="controls" colspan="10">
-                    <button id="import" type="button" class="pure-button tooltip">
-                        <span class="tooltiptext">Import settings</span>
-                        <img src="/assets/import.svg">
-                    </button>
-                    &nbsp;
-                    <button id="export" type="button" class="pure-button tooltip">
-                        <span class="tooltiptext">Export settings</span>
-                        <img src="/assets/export.svg">
-                    </button>
-                    &nbsp;
-                    <button id="new" type="button" class="pure-button tooltip">
-                        <span class="tooltiptext">Create new user</span>
-                        <img src="/assets/add.svg">
-                    </button>
-                    &nbsp;
-                    <button id="save" type="button" class="pure-button tooltip">
-                        <span class="tooltiptext">Accept changes</span>
-                        <img src="/assets/save.svg">
-                    </button>
-                </td>
-            </tr>
-        </tfoot>
+    <div class="pure-menu pure-menu-horizontal">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item pure-menu-selected">
+                <a tab="users" href="#" class="pure-menu-link">Users</a>
+            </li>
+            <li class="pure-menu-item">
+                <a tab="envs" href="#" class="pure-menu-link">Environments</a>
+            </li>
+        </ul>
+    </div>
+
+    <table id="users">
     </table>
+
+    <table id="envs" style="display:none;">
+    </table>
+
+    <div class="pure-menu pure-menu-horizontal">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item">
+                <button id="import" type="button" class="pure-button tooltip">
+                    <span class="tooltiptext">Import</span>
+                    <img src="/assets/import.svg">
+                </button>
+            </li>
+            <li class="pure-menu-item">
+                <button id="export" type="button" class="pure-button tooltip">
+                    <span class="tooltiptext">Export</span>
+                    <img src="/assets/export.svg">
+                </button>
+            </li>
+            <li class="pure-menu-item">
+                <button id="new" type="button" class="pure-button tooltip">
+                    <span class="tooltiptext">Create</span>
+                    <img src="/assets/add.svg">
+                </button>
+            </li>
+            <li class="pure-menu-item">
+                <button id="save" type="button" class="pure-button tooltip">
+                    <span class="tooltiptext">Confirm</span>
+                    <img src="/assets/save.svg">
+                </button>
+            </li>
+        </ul>
+    </div>
 
     <script src="options.js"></script>
 
