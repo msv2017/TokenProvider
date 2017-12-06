@@ -78,7 +78,7 @@ function update() {
             store = store.data;
         }
 
-        // alert(JSON.stringify(store, null, 2));
+        //  alert(JSON.stringify(store, null, 2));
 
         $('table#users').empty();
         $('table#users').append(users_header(store.environments));
@@ -100,6 +100,18 @@ function update() {
 
         $('table#envs').empty();
         $('table#envs').append(envs_header(store.environments));
+
+        adjust_inputs();
+    });
+}
+
+function adjust_inputs() {
+    $('input').each((i, el) => {
+        $(el).after('<span class="fitter" style="display:none"></span>');
+        let span = $(el).siblings('span.fitter').first();
+        span.text($(el).val() || $(el).attr('placeholder'));
+        let size = span.width();
+        $(el).css("width", size);
     });
 }
 
@@ -216,15 +228,28 @@ function gen_user(name) {
     return user;
 }
 
-function add_row(envs) {
+function add_row() {
     if ($("table#users").is(":visible")) {
-        let user = gen_user("user");
-        $("table#users tbody").append(row_user(envs, user));
-        $(`tr[user='${user}'] input.edit_user`).focus().select();
+        chrome.storage.local.get('data', function (store) {
+            if ($.isEmptyObject(store))
+                store = settings;
+            else {
+                store = store.data;
+            }
+
+            let user = gen_user("user");
+
+            $("table#users tbody").append(row_user(store.environments, user));
+
+            adjust_inputs();
+
+            $(`tr[user='${user}'] input.edit_user`).focus().select();
+        });
     }
 
     if ($("table#envs").is(":visible")) {
         $("table#envs tbody").append(row_env());
+        adjust_inputs();
     }
 }
 
@@ -267,16 +292,33 @@ $.getJSON("/init.json", (data) => {
 });
 
 $(() => {
-    update();
+    $(document).on("keypress", 'input[type="text"]', (function (e) {
+        if (e.which !== 0 && e.charCode !== 0) {
+            var c = String.fromCharCode(e.keyCode | e.charCode);
+            let span = $(this).siblings('span.fitter').first();
+            let text = ($(this).val() + c) || $(this).attr('placeholder');
+            span.text(text);
+            let size = span.width();
+            $(this).css("width", size);
+        }
+    }));
+
+    $(document).on("change paste keyup", 'input[type="text"]', (function () {
+        let span = $(this).siblings('span.fitter').first();
+        span.text($(this).val() || $(this).attr('placeholder'));
+        let size = span.width();
+        $(this).css("width", size);
+    }));
 
     $(document).on("click", ".remove", remove_row);
     $(document).on("click", ".check_default", set_default);
     $(document).on("click", ".pure-menu-link", tab_click);
-
     $(document).on("change", ".edit_user", set_user);
 
     $("#save").on("click", save);
     $("#new").on("click", add_row);
     $("#export").on("click", export_data);
     $("#import").on("click", import_data);
+
+    update();
 });

@@ -22,10 +22,6 @@ tbody td {
     border-right: 1px solid #cccccc;
 }
 
-tbody td input {
-    width: 80px;
-}
-
 tbody tr[default_user='true'] {
     font-weight: bold;
 }
@@ -35,11 +31,7 @@ tfoot td {
     padding: 1em 0 0 0;
 }
 
-td input {
-    margin: 0.5em;
-}
-
-input[type="text"] {
+input[type="text"], span.fitter {
     border: 0;
     border-radius: 0;
     -webkit-border-radius: 0;
@@ -48,6 +40,8 @@ input[type="text"] {
     background: #ffffff !important;
     outline: none;
     margin: 4px;
+    font-family:Sans-serif; 
+    white-space:pre;
 }
 
 img {
