@@ -1,8 +1,14 @@
 function init() {
     chrome.storage.local.get('data', function (store) {
+        if ($.isEmptyObject(store))
+            store = settings;
+        else {
+            store = store.data;
+        }
+
         let users = [];
-        for (let user of store.data.users) {
-            if(users.find(x=> x === user.user))
+        for (let user of store.users) {
+            if (users.find(x => x === user.user))
                 continue;
             users.push(user.user);
             $("#placeholder").append(user_template(user));
@@ -25,12 +31,17 @@ function user_click() {
     $(`#${current_user} img`).attr("src", "/assets/square_checked.svg");
 
     chrome.storage.local.get('data', function (store) {
+        if ($.isEmptyObject(store))
+            store = settings;
+        else {
+            store = store.data;
+        }
 
-        for (let user of store.data.users) {
+        for (let user of store.users) {
             user.isDefault = user.user === current_user ? "true" : "false";
         }
 
-        chrome.storage.local.set({ data: { users: store.data.users, environments: settings.environments } }, function () {
+        chrome.storage.local.set({ data: { users: store.users, environments: store.environments } }, function () {
             setTimeout(function () {
                 window.close();
             }, 0);

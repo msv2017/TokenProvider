@@ -12,8 +12,7 @@
     "contextMenus",
     "activeTab",
     "storage",
-    "unlimitedStorage",
-    "https://unpkg.com/purecss@1.0.0/build/pure-min.css"
+    "unlimitedStorage"
   ],
   "icons": {
     "32": "assets/icon.png"
