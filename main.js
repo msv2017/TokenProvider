@@ -29,7 +29,8 @@ function start() {
                 xhr.send();
             }
 
-            var url = tab.toString();
+            var url = tab.toString().replace(/(^\w+:|^)\/\//, '');
+            url = url.substring(0, url.indexOf('/'));
             var remote;
 
             for (let i = 0; i < store.data.environments.length; i++) {
